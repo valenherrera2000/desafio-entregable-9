@@ -1,6 +1,6 @@
-import ProductService from '../services/product.services.js';
-import ProductModel from "../models/ProductModel.js";
-import UserModel from "../models/UserModel.js";
+import { productService } from '../services/index.js';
+import ProductModel from "../dao/models/ProductModel.js";
+import UserModel from "../dao/models/UserModel.js";
 
 export default class ProductController {
     static async create(data, userId) {
@@ -17,7 +17,7 @@ export default class ProductController {
             data.owner = 'default-admin-id';
         }
 
-        const newProduct = await ProductService.create(data);
+        const newProduct = await productService.create(data);
         console.log('Product created successfully 🛍️');
         return newProduct;
     }
@@ -41,7 +41,6 @@ export default class ProductController {
         await ProductModel.updateOne({ _id: productId }, { $set: data });
         console.log('Product updated successfully 🛍️');
     }
-
 
     static async deleteById(productId, userId) {
         const product = await ProductModel.findById(productId);

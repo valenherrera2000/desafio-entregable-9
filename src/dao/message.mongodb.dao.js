@@ -1,4 +1,4 @@
-import MessageModel from "../models/MessageModel.js";
+import MessageModel from "./models/MessageModel.js";
 
 export default class MessageDAO {
     static getAll = async () => {

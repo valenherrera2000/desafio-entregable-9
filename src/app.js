@@ -15,7 +15,8 @@ import indexRouter from './routers/views/index.router.js';
 import productViewRouter from './routers/views/product.router.js';
 import cartViewRouter from './routers/views/cart.router.js'; 
 import messageViewRouter from './routers/views/message.router.js'; 
-import UserDao from './dao/factory.js';
+import userViewRouter from './routers/views/user.router.js'; 
+import UserDAO from './DAO/user.mongodb.DAO.js';
 
 const app = express();
 

@@ -12,7 +12,8 @@ async function initializeUserDao() {
         case 'memory':
             throw new Error('Not implemented 😱');
         case 'mongo':
-            UserDao = (await import('./user.mongodb.dao.js')).default;
+            const userDAO = (await import('./user.mongodb.dao.js')).default;
+            UserDao = userDAO.UserDAO;
             break;
         default:
             throw new Error('Invalid persistence option in configuration 😱');
@@ -24,4 +25,4 @@ initializeUserDao().catch(error => {
     process.exit(1);
 });
 
-module.exports = UserDao; 
+module.exports = UserDao;

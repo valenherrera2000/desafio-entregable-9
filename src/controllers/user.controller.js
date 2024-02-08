@@ -1,68 +1,63 @@
-import UserService from '../services/user.services';
-import bcrypt from 'bcrypt';
+import { userService } from "../services/index.js";
 
-export default class UserController {
-    static async create(data) {
-        console.log('Creating a new user 🙋‍♂️');
-        const newUser = await UserService.create(data);
-        console.log('User created successfully 🙋‍♂️');
-        return newUser;
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await userService.getAll();
+        res.send({ status: "success", payload: users });
+    } catch (error) {
+        console.error("Error fetching all users:", error);
+        res.status(500).send({ status: "error", error: "Internal Server Error" });
     }
+};
 
-    static async get(query = {}) {
-        const users = await UserService.findAll(query);
-        return users;
-    }
+const getUser = async (req, res) => {
+    try {
+        const userId = req.params.uid;
+        const user = await userService.getUserById(userId);
 
-    static async getById(userId) {
-        const user = await UserService.findById(userId);
         if (!user) {
-            throw new Error(`User ID not found: ${userId} 😨`);
-        }
-        return user;
-    }
-
-    static async updateById(userId, data) {
-        await UserController.getById(userId);
-        console.log('Updating the user 🙋‍♂️');
-        await UserService.updateById(userId, data);
-        console.log('User updated successfully 🙋‍♂️');
-    }
-
-    static async deleteById(userId) {
-        await UserController.getById(userId);
-        console.log('Deleting the user 🙋‍♂️');
-        await UserService.deleteById(userId);
-        console.log('User deleted successfully 🙋‍♂️');
-    }
-
-    static async resetPassword(token, newPassword) {
-        const user = await UserService.findByResetToken(token);
-        if (!user || user.resetTokenExpiry < Date.now()) {
-            throw new Error('Token is invalid or has expired');
+            return res.status(404).send({ status: "error", error: "User not found" });
         }
 
-        const isSamePassword = await bcrypt.compare(newPassword, user.password);
-        if (isSamePassword) {
-            throw new Error('New password must be different from the old password');
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        await UserService.updateById(user._id, { 
-            password: hashedPassword,
-            resetToken: null,
-            resetTokenExpiry: null 
-        });
+        res.send({ status: "success", payload: user });
+    } catch (error) {
+        console.error("Error fetching user by ID:", error);
+        res.status(500).send({ status: "error", error: "Internal Server Error" });
     }
+};
 
-    static async toggleUserRole(userId) {
-        const user = await UserDAO.getById(userId);
+const updateUser = async (req, res) => {
+    try {
+        const updateBody = req.body;
+        const userId = req.params.uid;
+        const user = await userService.getUserById(userId);
+
         if (!user) {
-            throw new Error(`User ID not found: ${userId}`);
+            return res.status(404).send({ status: "error", error: "User not found" });
         }
-    
-        const newRole = user.role === 'premium' ? 'user' : 'premium';
-        await UserDAO.updateById(userId, { role: newRole });
+
+        await userService.update(userId, updateBody);
+        res.send({ status: "success", message: "User updated" });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send({ status: "error", error: "Internal Server Error" });
     }
-}
+};
+
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.params.uid;
+        await userService.deleteById(userId);
+        res.send({ status: "success", message: "User deleted" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).send({ status: "error", error: "Internal Server Error" });
+    }
+};
+
+export default {
+    deleteUser,
+    getAllUsers,
+    getUser,
+    updateUser,
+};

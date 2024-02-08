@@ -1,4 +1,4 @@
-import CartModel from '../models/CartModel.js';
+import CartModel from './models/CartModel.js';
 
 export default class CartDAO {
     static async getById(cartId) {

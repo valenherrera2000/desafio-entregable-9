@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import MessageController from '../../controllers/message.controller.js';
+import MessagesController from '../../controllers/message.controller.js';
 
 const router = Router();
 
-router.get('/messages', async (req, res) => {
-    let messages = await MessageController.get();
-    res.render('messages', { messages: messages.map(message => message.toJSON()) });
-});
+router.get('/messages', MessagesController.getAllMessages);
+
+router.get('/messages/:mid', MessagesController.getMessage);
+router.put('/messages/:mid', MessagesController.updateMessage);
+router.delete('/messages/:mid', MessagesController.deleteMessage);
 
 export default router;

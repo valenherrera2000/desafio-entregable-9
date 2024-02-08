@@ -1,20 +1,20 @@
-import MessageService from '../services/message.services.js';
-import MessageDAO from '../dao/message.mongodb.dao.js';
+import { messageService } from '../services/index.js';
+import MessageDAO from '../DAO/message.mongodb.DAO.js';
 
-export default class MessageController {
+export default class MessagesController {
   static async create(data) {
     console.log('Creating a new message 📩');
-    const newMessage = await MessageService.create(data);
+    const newMessage = await messageService.create(data);
     console.log('Message created successfully 📩');
     return newMessage;
   }
 
-  static async get(query = {}) {
+  static async getAllMessages(query = {}) {
     const messages = await MessageDAO.getAll(query);
     return messages;
   }
 
-  static async getById(messageId) {
+  static async getMessage(messageId) {
     const message = await MessageDAO.getById(messageId);
     if (!message) {
       throw new Error(`Message ID not found: ${messageId} 😨`);
@@ -22,17 +22,17 @@ export default class MessageController {
     return message;
   }
 
-  static async updateById(messageId, data) {
-    await MessageController.getById(messageId);
+  static async updateMessage(messageId, data) {
+    await MessagesController.getMessage(messageId);
     console.log('Updating the message 📩');
-    await MessageDAO.updateById(messageId, data);
+    await messageService.updateById(messageId, data);
     console.log('Message updated successfully 📩');
   }
 
-  static async deleteById(messageId) {
-    await MessageController.getById(messageId);
+  static async deleteMessage(messageId) {
+    await MessagesController.getMessage(messageId);
     console.log('Deleting the message 📩');
-    await MessageDAO.deleteById(messageId);
+    await messageService.deleteById(messageId);
     console.log('Message deleted successfully 📩');
   }
 }
